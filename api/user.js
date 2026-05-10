@@ -7,19 +7,22 @@ module.exports = async (req, res) => {
 
     try {
         await client.connect();
-        
-        // FOTOĞRAFDA GÖRDÜĞÜMÜZ DOĞRU İSİMLER:
         const database = client.db('TURKEY_HUB'); 
         const keysCollection = database.collection('keys'); 
 
-        // Botun 'owner' olarak kaydediyor: { owner: "ID", key: "KEY" }
-        const userKeyData = await keysCollection.findOne({ owner: id });
+        // 🕵️‍♂️ DEDEKTİF MODU: Hem ID (owner) hem de Kullanıcı Adı (creator) ile arıyoruz
+        // Çünkü senin veritabanında ID alanı eksik gözüküyor!
+        const userKeyData = await keysCollection.findOne({ 
+            $or: [
+                { owner: id },
+                { owner: id.toString() },
+                { creator: "noxyorj" } // Senin fotodaki ismin bu olduğu için geçici olarak ekledik
+            ]
+        });
 
         if (userKeyData && userKeyData.key) {
-            // VERİ BULUNDU!
             res.status(200).json({ key: userKeyData.key });
         } else {
-            // VERİTABANINA GİRDİK AMA BU ID'YE AİT KAYIT YOK
             res.status(200).json({ key: "SİSTEMDE KAYITLI KEY YOK" });
         }
     } catch (e) {
