@@ -3,47 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LuaWare Script OS | v1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>LuaWare Script OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ==========================================
-           🎨 TEMA VE TEMEL AYARLAR
-           ========================================== */
         :root {
-            --bg-deep: #030303;    /* Derin Siyah */
-            --bg-card: #0a0a0a;    /* Kart Arka Planı */
-            --neon-green: #76ff03;  /* Neon Yeşil */
+            --bg-deep: #050505;
+            --bg-card: #0f0f0f;
+            --accent: #76ff03; /* Soft Neon Yeşil */
             --text-main: #ffffff;
-            --text-sub: #888888;
+            --text-sub: #777777;
+            --discord-color: #5865F2;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            overflow: hidden; /* Giriş sırasında kaydırmayı engelle */
-            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-deep); color: var(--text-main);
+            font-family: 'Montserrat', sans-serif; overflow: hidden;
         }
 
         /* ==========================================
-           🌌 KATMAN 1: MATRIX VERİ AKIŞI (Daha Belirgin)
+           ❄️ KATMAN 1: SOFT KAR TOPU / TOZ EFEKTİ
            ========================================== */
-        #bg-data-stream {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; /* En altta */
+        #particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
         }
 
-        .data-line {
+        .snowball {
             position: absolute;
-            background: linear-gradient(to bottom, transparent, var(--neon-green), transparent);
-            width: 2px; /* Çizgi kalınlığı */
-            opacity: 0.6; /* DAHA BELİRGİN */
-            animation: streamDown linear infinite;
+            background: rgba(118, 255, 3, 0.15); /* Göz yormayan, çok hafif yeşilimsi beyaz */
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(118, 255, 3, 0.1);
+            animation: fall linear infinite;
         }
 
-        @keyframes streamDown {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100vh); }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh) scale(1.2); opacity: 0; }
         }
 
         /* ==========================================
@@ -51,165 +48,197 @@
            ========================================== */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-deep);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 100; /* Her şeyin üstünde */
-            transition: opacity 1s ease, visibility 1s ease;
+            background-color: var(--bg-deep); display: flex; justify-content: center; align-items: center;
+            z-index: 100; transition: opacity 1s ease, visibility 1s ease;
         }
 
-        .intro-content { text-align: center; }
-
         .intro-title {
-            font-size: 5rem; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 15px; margin: 0; color: #fff;
-            opacity: 0; filter: blur(20px);
+            font-size: 4.5rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 10px; margin: 0; color: #fff;
+            opacity: 0; filter: blur(15px);
             animation: revealTitle 2s ease-out 0.5s forwards;
         }
 
-        .intro-title span {
-            color: var(--neon-green);
-            text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green);
-        }
+        .intro-title span { color: var(--accent); }
 
         @keyframes revealTitle {
-            0% { opacity: 0; filter: blur(20px); transform: scale(0.8); letter-spacing: 30px; }
-            100% { opacity: 1; filter: blur(0); transform: scale(1); letter-spacing: 15px; }
+            0% { opacity: 0; filter: blur(15px); transform: scale(0.9); }
+            100% { opacity: 1; filter: blur(0); transform: scale(1); }
         }
 
         /* ==========================================
-           💻 KATMAN 3: ANA SİTE (GİRİŞTEN SONRA)
+           💻 KATMAN 3: ANA SİTE VE HEADER
            ========================================== */
         #main-site {
-            position: relative;
-            z-index: 10; /* Veri akışının üstünde */
-            display: none; /* Başlangıçta gizli */
-            opacity: 0;
-            height: 100vh;
-            overflow-y: auto; /* İçerik taşarsa kaydır */
-            transition: opacity 1s ease;
+            position: relative; z-index: 10; display: none; opacity: 0;
+            height: 100vh; overflow-y: auto; transition: opacity 1s ease;
         }
 
-        /* Giriş efekti class'ı */
-        #main-site.active {
-            display: block;
-            opacity: 1;
-        }
+        #main-site.active { display: block; opacity: 1; }
 
         header {
-            background-color: var(--bg-card);
-            padding: 20px 50px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #1a1a1a;
+            background-color: rgba(15, 15, 15, 0.8); backdrop-filter: blur(10px);
+            padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #1a1a1a; position: sticky; top: 0;
         }
 
         .nav-logo { font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; }
-        .nav-logo span { color: var(--neon-green); }
+        .nav-logo span { color: var(--accent); }
 
-        .discord-btn {
-            background-color: transparent; color: var(--neon-green);
-            border: 2px solid var(--neon-green);
-            padding: 10px 25px; font-weight: 700; border-radius: 5px;
-            cursor: pointer; text-decoration: none;
-            transition: all 0.3s ease;
+        /* Sağ Üst Discord Giriş / Profil Alanı */
+        .auth-container { display: flex; align-items: center; gap: 15px; }
+
+        .discord-login-btn {
+            background-color: var(--discord-color); color: white;
+            border: none; padding: 10px 20px; font-weight: 600; border-radius: 5px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s;
         }
 
-        .discord-btn:hover {
-            background-color: var(--neon-green); color: #000;
-            box-shadow: 0 0 20px var(--neon-green);
+        .discord-login-btn:hover { background-color: #4752C4; transform: translateY(-2px); }
+
+        /* Profil Görünümü (Başlangıçta Gizli) */
+        .user-profile {
+            display: none; align-items: center; gap: 12px;
+            background: #151515; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid #222;
         }
 
-        /* HERO SECTION (Sitenin Ortası) */
-        .hero {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 80vh; text-align: center; padding: 0 20px;
+        .user-profile img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--accent); }
+        .user-profile .username { font-weight: 600; font-size: 0.9rem; }
+
+        /* ==========================================
+           📊 DASHBOARD (KULLANICI PANELİ)
+           ========================================== */
+        .dashboard-container {
+            max-width: 900px; margin: 60px auto; padding: 0 20px;
+            display: none; /* Giriş yapılana kadar gizli */
         }
 
-        .hero-title { font-size: 4rem; font-weight: 900; margin: 0; }
-        .hero-title span { color: var(--neon-green); }
-        .hero-sub { color: var(--text-sub); font-size: 1.2rem; margin: 20px 0 40px 0; max-width: 600px; }
-
-        .get-script-btn {
-            background-color: var(--neon-green); color: #000;
-            padding: 18px 50px; font-size: 1.2rem; font-weight: 900;
-            border-radius: 8px; text-decoration: none; text-transform: uppercase;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(118, 255, 3, 0.3);
+        .card {
+            background: var(--bg-card); border: 1px solid #1a1a1a; border-radius: 12px;
+            padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .get-script-btn:hover {
-            box-shadow: 0 0 30px var(--neon-green);
-            transform: translateY(-3px);
+        .card-header { font-size: 1.5rem; font-weight: 800; border-bottom: 1px solid #222; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between;}
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .info-box { background: #111; padding: 15px; border-radius: 8px; border: 1px solid #222; }
+        .info-label { color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .info-value { font-size: 1.1rem; font-weight: 600; font-family: monospace; color: var(--accent); }
+
+        .key-box {
+            background: rgba(118, 255, 3, 0.05); border: 1px dashed var(--accent);
+            padding: 15px; border-radius: 8px; text-align: center; font-size: 1.2rem; font-family: monospace; letter-spacing: 2px;
         }
+
+        /* Giriş Yapılmadan Önceki Ana Sayfa */
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; }
+        .hero h1 { font-size: 3.5rem; margin: 0; }
+        .hero p { color: var(--text-sub); margin-top: 15px; }
 
     </style>
 </head>
 <body>
 
-    <div id="bg-data-stream"></div>
+    <div id="particles"></div>
 
     <div id="intro-screen">
-        <div class="intro-content">
-            <h1 class="intro-title">LuaWare <span>Pro</span></h1>
-        </div>
+        <h1 class="intro-title">LuaWare <span>Script</span></h1>
     </div>
 
     <div id="main-site">
         <header>
             <a href="#" class="nav-logo">Lua<span>Ware</span></a>
-            <a href="https://discord.gg/luaware" target="_blank" class="discord-btn">Discord'a Katıl</a>
+            <div class="auth-container">
+                <button class="discord-login-btn" id="loginBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+                    Discord ile Giriş Yap
+                </button>
+                
+                <div class="user-profile" id="userProfile">
+                    <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" id="userAvatar">
+                    <span class="username" id="userName">Noxyorj#0001</span>
+                </div>
+            </div>
         </header>
 
-        <main class="hero">
-            <h1 class="hero-title">Kütüphanesiz, <span>Kusursuz</span> Güç.</h1>
-            <p class="hero-sub">Roblox Prison Life'ın en gelişmiş, en hızlı ve en elit script hub'ı. Noxyorj tarafından geliştirildi.</p>
-            <a href="#" class="get-script-btn">Scripti Al / Get Key</a>
+        <main class="hero" id="guestView">
+            <h1>Sisteme Erişmek İçin Giriş Yapın</h1>
+            <p>Lisans anahtarlarınızı ve hesap bilgilerinizi görmek için Discord ile bağlanın.</p>
+        </main>
+
+        <main class="dashboard-container" id="dashboardView">
+            <div class="card">
+                <div class="card-header">
+                    Hesap Bilgileri
+                    <span style="font-size: 0.9rem; color: #76ff03; background: rgba(118,255,3,0.1); padding: 5px 10px; border-radius: 5px;">Doğrulandı</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-label">Discord Kullanıcı Adı</div>
+                        <div class="info-value">Noxyorj</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Discord ID</div>
+                        <div class="info-value">123456789012345678</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Aktif Lisans Anahtarın (Key)</div>
+                <p style="color: var(--text-sub); margin-top: 0;">LUAWARE scriptine executor üzerinden erişmek için bu anahtarı kullanın.</p>
+                <div class="key-box">
+                    LUAWARE-NOXY-987X-G6F2-PLQ1
+                </div>
+                <button style="margin-top: 15px; width: 100%; background: #222; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 5px; cursor: pointer;">Anahtarı Kopyala</button>
+            </div>
         </main>
     </div>
 
     <script>
-        // ==========================================
-        // 🌌 MATRIX VERİ AKIŞI MOTORU (Belirgin)
-        // ==========================================
-        const streamContainer = document.getElementById('bg-data-stream');
-        const lineCount = 50; // Çizgi sayısı
-
-        for (let i = 0; i < lineCount; i++) {
-            const line = document.createElement('div');
-            line.className = 'data-line';
-            
-            // Rastgele genişlik ve yükseklik (Daha uzun çizgiler)
-            line.style.width = Math.random() * 2 + 1 + 'px';
-            line.style.height = Math.random() * 300 + 100 + 'px';
-            
-            // Rastgele pozisyon
-            line.style.left = Math.random() * 100 + 'vw';
-            
-            // Rastgele hız ve gecikme (Hacker veri akışı temposu)
-            line.style.animationDuration = Math.random() * 3 + 2 + 's';
-            line.style.animationDelay = Math.random() * 2 + 's';
-            
-            streamContainer.appendChild(line);
+        // ❄️ Soft Kar Topu Efekti Motoru
+        const pContainer = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
+            const p = document.createElement('div');
+            p.className = 'snowball';
+            const size = Math.random() * 5 + 2 + 'px';
+            p.style.width = size; p.style.height = size;
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 10 + 10 + 's';
+            p.style.animationDelay = Math.random() * 5 + 's';
+            pContainer.appendChild(p);
         }
 
-        // ==========================================
-        // 🚀 GİRİŞ SİSTEMİ (AUTO-ENTRY)
-        // ==========================================
-        // Animasyon bittikten sonra (3 saniye) siteye giriş yap
+        // 🚀 Intro'dan Ana Siteye Geçiş
         setTimeout(() => {
             const intro = document.getElementById('intro-screen');
             const site = document.getElementById('main-site');
-            
-            // 1. Intro ekranını fade-out ile gizle
             intro.style.opacity = '0';
             intro.style.visibility = 'hidden';
-            
-            // 2. Ana siteyi aktif et (1s gecikmeyle, fade-out bitince)
-            setTimeout(() => {
-                site.classList.add('active');
-                document.body.style.overflow = 'auto'; // Kaydırmayı aç
-            }, 500);
+            setTimeout(() => { site.classList.add('active'); document.body.style.overflow = 'auto'; }, 800);
+        }, 3000);
 
-        }, 3500); // Intro süresi (3.5 saniye)
+        // 🔐 MOCK-UP (DEMO) GİRİŞ SİSTEMİ
+        // (Burası ileride Node.js / OAuth2 ile gerçeğe dönüşecek)
+        const loginBtn = document.getElementById('loginBtn');
+        const userProfile = document.getElementById('userProfile');
+        const guestView = document.getElementById('guestView');
+        const dashboardView = document.getElementById('dashboardView');
+
+        loginBtn.addEventListener('click', () => {
+            // Butonu yükleniyor efekti yap
+            loginBtn.innerHTML = "Bağlanıyor...";
+            loginBtn.style.opacity = "0.7";
+            
+            // 1 saniye sonra sanki Discord'dan veriler gelmiş gibi ekranı değiştir
+            setTimeout(() => {
+                loginBtn.style.display = 'none'; // Giriş butonunu gizle
+                userProfile.style.display = 'flex'; // Profil resmini göster
+                
+                guestView.style.display = 'none'; // Hoşgeldin yazısını gizle
+                dashboardView.style.display = 'block'; // KEY PANELİNİ GÖSTER!
+            }, 1000);
+        });
     </script>
 </body>
 </html>
