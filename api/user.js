@@ -8,11 +8,11 @@ module.exports = async (req, res) => {
         return res.status(400).json({ key: "HATA: Discord ID Bulunamadı!" });
     }
 
-    // 2. Vercel ayarlarından MongoDB şifreni çekiyoruz
+    // 2. Vercel ayarlarından gelen MongoDB URI
     const uri = process.env.MONGODB_URI; 
     
     if (!uri) {
-        return res.status(500).json({ key: "SİSTEM HATASI: Veritabanı Linki (URI) Eksik!" });
+        return res.status(500).json({ key: "SİSTEM HATASI: Veritabanı Linki Eksik!" });
     }
 
     const client = new MongoClient(uri);
@@ -20,19 +20,19 @@ module.exports = async (req, res) => {
     try {
         await client.connect();
         
-        // DİKKAT: Veritabanı ve Tablo (Collection) adını botuna göre düzenlersin
-        // Genelde botlarda db adı 'test' veya 'Cluster0', tablo adı 'users' veya 'keys' olur.
-        const database = client.db('test'); 
-        const users = database.collection('users'); 
+        // SENİN BOTUNUN ÖZEL AYARLARI:
+        // Botun 'KeyModel' kullandığına göre tablo adı büyük ihtimalle 'keys' (çoğul yapılır mongoose tarafından)
+        const database = client.db('test'); // Eğer MongoDB'de veritabanı adını Ryphera yaptıysan burayı 'Ryphera' yap
+        const keys = database.collection('keys'); 
 
-        // 3. Veritabanında senin ID'ni (345821033414262794) arıyoruz
-        const user = await users.findOne({ discordId: id }); // Senin botunda bu 'id' veya 'userId' olabilir, uyarlarsın.
+        // 3. Veritabanında senin botun 'owner' ismini kullanıyor!
+        const userKeyData = await keys.findOne({ owner: id });
 
-        if (user && user.key) {
-            // Adamı buldu ve keyi var!
-            res.status(200).json({ key: user.key });
+        if (userKeyData && userKeyData.key) {
+            // Key bulundu!
+            res.status(200).json({ key: userKeyData.key });
         } else {
-            // Adam giriş yaptı ama veritabanında ona atanmış bir key yok
+            // Kayıt yok
             res.status(200).json({ key: "SİSTEMDE KAYITLI KEY YOK" });
         }
     } catch (e) {
