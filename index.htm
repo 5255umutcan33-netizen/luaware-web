@@ -3,146 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LuaWare Script | Pro Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <title>LuaWare Script OS | v1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* ==========================================
+           🎨 TEMA VE TEMEL AYARLAR
+           ========================================== */
+        :root {
+            --bg-deep: #030303;    /* Derin Siyah */
+            --bg-card: #0a0a0a;    /* Kart Arka Planı */
+            --neon-green: #76ff03;  /* Neon Yeşil */
+            --text-main: #ffffff;
+            --text-sub: #888888;
+        }
+
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505; /* Çok derin siyah */
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow: hidden; /* Giriş sırasında kaydırmayı engelle */
             font-family: 'Montserrat', sans-serif;
         }
 
         /* ==========================================
-           🌌 ARKA PLAN ANİMASYONU (PARTICLES)
+           🌌 KATMAN 1: MATRIX VERİ AKIŞI (Daha Belirgin)
            ========================================== */
-        .bg-animation {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            /* Hafif bir tarama çizgisi efekti */
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
+        #bg-data-stream {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; /* En altta */
         }
 
-        /* Akan yeşil ışıklar */
-        .particle {
+        .data-line {
             position: absolute;
-            background: #76ff03;
-            border-radius: 50%;
-            opacity: 0.3;
-            filter: blur(2px);
-            animation: moveParticles 15s linear infinite;
+            background: linear-gradient(to bottom, transparent, var(--neon-green), transparent);
+            width: 2px; /* Çizgi kalınlığı */
+            opacity: 0.6; /* DAHA BELİRGİN */
+            animation: streamDown linear infinite;
         }
 
-        @keyframes moveParticles {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            50% { opacity: 0.5; }
-            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        @keyframes streamDown {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
         }
 
         /* ==========================================
-           ✍️ ANA YAZI VE EFEKTLER
+           🎬 KATMAN 2: GİRİŞ ANİMASYONU (INTRO)
            ========================================== */
-        .content {
-            position: relative;
-            z-index: 10; /* Yazı her şeyin üstünde */
-            text-align: center;
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-deep);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100; /* Her şeyin üstünde */
+            transition: opacity 1s ease, visibility 1s ease;
         }
 
-        .main-text {
-            color: #ffffff;
-            font-size: 6rem;
-            text-transform: uppercase;
-            letter-spacing: 10px;
-            margin: 0;
-            opacity: 0;
-            filter: blur(10px);
-            animation: revealText 2s ease-out forwards;
+        .intro-content { text-align: center; }
+
+        .intro-title {
+            font-size: 5rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 15px; margin: 0; color: #fff;
+            opacity: 0; filter: blur(20px);
+            animation: revealTitle 2s ease-out 0.5s forwards;
         }
 
-        .script-part {
-            color: #76ff03;
-            text-shadow: 0 0 15px #76ff03, 0 0 30px #76ff03;
-            display: inline-block;
-            animation: glitch 3s infinite;
+        .intro-title span {
+            color: var(--neon-green);
+            text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green);
         }
 
-        /* Yazı Açılış Animasyonu */
-        @keyframes revealText {
+        @keyframes revealTitle {
             0% { opacity: 0; filter: blur(20px); transform: scale(0.8); letter-spacing: 30px; }
-            100% { opacity: 1; filter: blur(0); transform: scale(1); letter-spacing: 10px; }
+            100% { opacity: 1; filter: blur(0); transform: scale(1); letter-spacing: 15px; }
         }
 
-        /* Hafif Glitch (Bozulma) Efekti */
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            2% { transform: translate(-2px, 2px); }
-            4% { transform: translate(-2px, -2px); }
-            6% { transform: translate(2px, 2px); }
-            8% { transform: translate(2px, -2px); }
-            10% { transform: translate(0); }
-            100% { transform: translate(0); }
-        }
-
-        /* Alt Yazı */
-        .sub-text {
-            color: #555;
-            font-size: 1rem;
-            margin-top: 20px;
-            letter-spacing: 3px;
+        /* ==========================================
+           💻 KATMAN 3: ANA SİTE (GİRİŞTEN SONRA)
+           ========================================== */
+        #main-site {
+            position: relative;
+            z-index: 10; /* Veri akışının üstünde */
+            display: none; /* Başlangıçta gizli */
             opacity: 0;
-            animation: fadeIn 1.5s ease-out 2s forwards;
+            height: 100vh;
+            overflow-y: auto; /* İçerik taşarsa kaydır */
+            transition: opacity 1s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Giriş efekti class'ı */
+        #main-site.active {
+            display: block;
+            opacity: 1;
         }
+
+        header {
+            background-color: var(--bg-card);
+            padding: 20px 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #1a1a1a;
+        }
+
+        .nav-logo { font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; }
+        .nav-logo span { color: var(--neon-green); }
+
+        .discord-btn {
+            background-color: transparent; color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            padding: 10px 25px; font-weight: 700; border-radius: 5px;
+            cursor: pointer; text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .discord-btn:hover {
+            background-color: var(--neon-green); color: #000;
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        /* HERO SECTION (Sitenin Ortası) */
+        .hero {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 80vh; text-align: center; padding: 0 20px;
+        }
+
+        .hero-title { font-size: 4rem; font-weight: 900; margin: 0; }
+        .hero-title span { color: var(--neon-green); }
+        .hero-sub { color: var(--text-sub); font-size: 1.2rem; margin: 20px 0 40px 0; max-width: 600px; }
+
+        .get-script-btn {
+            background-color: var(--neon-green); color: #000;
+            padding: 18px 50px; font-size: 1.2rem; font-weight: 900;
+            border-radius: 8px; text-decoration: none; text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(118, 255, 3, 0.3);
+        }
+
+        .get-script-btn:hover {
+            box-shadow: 0 0 30px var(--neon-green);
+            transform: translateY(-3px);
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="bg-animation" id="particles"></div>
+    <div id="bg-data-stream"></div>
 
-    <div class="content">
-        <h1 class="main-text">LuaWare <span class="script-part">Script</span></h1>
-        <p class="sub-text">Developed by Noxyorj</p>
+    <div id="intro-screen">
+        <div class="intro-content">
+            <h1 class="intro-title">LuaWare <span>Pro</span></h1>
+        </div>
+    </div>
+
+    <div id="main-site">
+        <header>
+            <a href="#" class="nav-logo">Lua<span>Ware</span></a>
+            <a href="https://discord.gg/luaware" target="_blank" class="discord-btn">Discord'a Katıl</a>
+        </header>
+
+        <main class="hero">
+            <h1 class="hero-title">Kütüphanesiz, <span>Kusursuz</span> Güç.</h1>
+            <p class="hero-sub">Roblox Prison Life'ın en gelişmiş, en hızlı ve en elit script hub'ı. Noxyorj tarafından geliştirildi.</p>
+            <a href="#" class="get-script-btn">Scripti Al / Get Key</a>
+        </main>
     </div>
 
     <script>
-        // Arka planda rastgele parçacıklar oluşturma (Saf JavaScript)
-        const particleContainer = document.getElementById('particles');
-        const particleCount = 40;
+        // ==========================================
+        // 🌌 MATRIX VERİ AKIŞI MOTORU (Belirgin)
+        // ==========================================
+        const streamContainer = document.getElementById('bg-data-stream');
+        const lineCount = 50; // Çizgi sayısı
 
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
+        for (let i = 0; i < lineCount; i++) {
+            const line = document.createElement('div');
+            line.className = 'data-line';
             
-            // Rastgele boyut
-            const size = Math.random() * 4 + 1 + 'px';
-            particle.style.width = size;
-            particle.style.height = size;
+            // Rastgele genişlik ve yükseklik (Daha uzun çizgiler)
+            line.style.width = Math.random() * 2 + 1 + 'px';
+            line.style.height = Math.random() * 300 + 100 + 'px';
             
             // Rastgele pozisyon
-            particle.style.left = Math.random() * 100 + 'vw';
+            line.style.left = Math.random() * 100 + 'vw';
             
-            // Rastgele hız ve gecikme
-            particle.style.animationDuration = Math.random() * 10 + 5 + 's';
-            particle.style.animationDelay = Math.random() * 5 + 's';
+            // Rastgele hız ve gecikme (Hacker veri akışı temposu)
+            line.style.animationDuration = Math.random() * 3 + 2 + 's';
+            line.style.animationDelay = Math.random() * 2 + 's';
             
-            particleContainer.appendChild(particle);
+            streamContainer.appendChild(line);
         }
+
+        // ==========================================
+        // 🚀 GİRİŞ SİSTEMİ (AUTO-ENTRY)
+        // ==========================================
+        // Animasyon bittikten sonra (3 saniye) siteye giriş yap
+        setTimeout(() => {
+            const intro = document.getElementById('intro-screen');
+            const site = document.getElementById('main-site');
+            
+            // 1. Intro ekranını fade-out ile gizle
+            intro.style.opacity = '0';
+            intro.style.visibility = 'hidden';
+            
+            // 2. Ana siteyi aktif et (1s gecikmeyle, fade-out bitince)
+            setTimeout(() => {
+                site.classList.add('active');
+                document.body.style.overflow = 'auto'; // Kaydırmayı aç
+            }, 500);
+
+        }, 3500); // Intro süresi (3.5 saniye)
     </script>
 </body>
 </html>
