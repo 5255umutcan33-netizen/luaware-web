@@ -3,102 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUAWARE OS | Blox Strike Edition</title>
+    <title>LuaWare Script OS v1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
-
         body {
             margin: 0;
             padding: 0;
-            background-color: #121212; 
-            color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            background-color: #080808; /* Sade siyahımsı/Koyu füme arka plan */
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden; /* Taşmayı engelle */
         }
 
-        .glow {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: #76ff03; 
-            filter: blur(150px);
-            opacity: 0.2;
-            z-index: -1;
+        .intro-container {
+            text-align: center;
         }
 
-        .title {
-            font-size: 5rem;
-            font-weight: 900;
+        .main-text {
+            color: #f0f0f0; /* Tam beyaz değil, hafif gri/beyaz */
+            font-size: 5rem; /* Büyük ve vurucu yazı boyutu */
+            text-transform: uppercase; /* Bütün harfleri büyük yap */
+            letter-spacing: 5px; /* Harf arası boşluk */
             margin: 0;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            text-shadow: 0px 0px 20px rgba(118, 255, 3, 0.5); 
+            
+            /* Animasyon başlangıç ayarları (gizli) */
+            opacity: 0;
+            transform: scale(1.1) translateY(20px);
+            
+            /* Animasyon tetikleme (Kütüphanesiz CSS) */
+            animation: sleekReveal 2.5s ease-out forwards;
         }
 
-        .title span {
-            color: #76ff03; 
+        /* "Script" kelimesi için özel parlayan yeşil tema */
+        .script-part {
+            color: #76ff03; /* O efsane neon yeşili koruyoruz */
+            opacity: 0;
+            display: inline-block; /* Animasyon için gerekli */
+            animation: scriptFadeIn 1s ease-out 1.2s forwards; /* 1.2s gecikmeli başlar */
         }
 
-        .subtitle {
-            font-size: 1.2rem;
-            color: #a0a0a0;
-            margin-top: 10px;
-            margin-bottom: 40px;
+        /* ==========================================
+           🎯 CSS KEYFRAMES (ANİMASYON MOTORU)
+           ========================================== */
+
+        /* Genel yazının gelişi (Ölçeklenme + Opaklık + Yukarı süzülme) */
+        @keyframes sleekReveal {
+            0% { 
+                opacity: 0; 
+                transform: scale(1.1) translateY(20px); 
+                letter-spacing: 20px; /* Çok açık başlar */
+            }
+            40% { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+                letter-spacing: 8px; /* Daralmaya başlar */
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+                letter-spacing: 5px; /* Final boşluk */
+            }
         }
 
-        .button-container {
-            display: flex;
-            gap: 20px;
-        }
-
-        .btn {
-            background-color: #1e1e1e;
-            color: #ffffff;
-            border: 2px solid #333;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            border-color: #76ff03;
-            box-shadow: 0px 0px 15px rgba(118, 255, 3, 0.2);
-        }
-
-        .btn:hover {
-            background-color: #76ff03;
-            color: #000000;
-            box-shadow: 0px 0px 30px rgba(118, 255, 3, 0.6);
-            transform: translateY(-3px);
-        }
-
-        .footer {
-            position: absolute;
-            bottom: 20px;
-            color: #555;
-            font-size: 0.9rem;
+        /* "Script" kelimesinin sonradan belirmesi ve neon parlaması */
+        @keyframes scriptFadeIn {
+            0% { 
+                opacity: 0; 
+                transform: translateX(15px); /* Hafif sağdan gelir */
+                text-shadow: 0 0 0px #76ff03;
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateX(0); 
+                /* Efsanevi Neon Parlaması (Glow Effect) */
+                text-shadow: 0 0 10px #76ff03, 0 0 20px #76ff03, 0 0 30px #76ff03;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="glow"></div>
-    <h1 class="title">LUA<span>WARE</span> OS</h1>
-    <p class="subtitle">Roblox'un En Gelişmiş Prison Life Scripti</p>
-    <div class="button-container">
-        <a href="https://discord.gg/luaware" target="_blank" class="btn btn-primary">Discord'a Katıl</a>
-        <a href="https://youtube.com/@LuawareScrpt" target="_blank" class="btn">YouTube</a>
-    </div>
-    <div class="footer">
-        &copy; 2026 LUAWARE by NOXYORJ. Tüm Hakları Saklıdır.
+    <div class="intro-container">
+        <h1 class="main-text">LuaWare <span class="script-part">Script</span></h1>
     </div>
 </body>
 </html>
