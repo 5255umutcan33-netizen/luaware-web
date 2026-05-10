@@ -8,27 +8,34 @@ module.exports = async (req, res) => {
     try {
         await client.connect();
         
-        // --- KRİTİK AYAR BÖLGESİ ---
-        // MongoDB Atlas'ta sol menüden 'Browse Collections'a tıkladığında 
-        // yukarıda yazan Database ismini ve altındaki Tablo ismini kontrol et.
+        // --- BU KISMI DİKKATLİCE KONTROL ET ---
+        // Botunun bağlandığı asıl veritabanı adı 'test' olmayabilir. 
+        // MongoDB Atlas'ta Browse Collections kısmında en üstte ne yazıyor? (Örn: RypheraDB, Cluster0 vb.)
+        const dbName = 'test'; 
+        const database = client.db(dbName);
         
-        const database = client.db('test'); // Eğer orada 'Ryphera' yazıyorsa burayı 'Ryphera' yap!
-        
-        // Botun 'KeyModel' dediği için Mongoose bunu 'keys' olarak kaydeder.
+        // Botun 'KeyModel' dediği için Mongoose bunu otomatik 'keys' yapar.
+        // Ama bazen 'keymodels' de yapabilir.
         const keysCollection = database.collection('keys'); 
 
-        // Senin bot kodunda 'owner' olarak kaydediyor: { owner: "ID", key: "KEY" }
+        // Bot kodunda 'owner' ve 'key' kullanmışsın.
         const userKeyData = await keysCollection.findOne({ owner: id });
 
         if (userKeyData && userKeyData.key) {
             res.status(200).json({ key: userKeyData.key });
         } else {
-            // Eğer hala bulamıyorsa, koleksiyondaki ilk veriyi konsola basalım (Vercel loglarından bakarız)
-            console.log(`${id} için veri bulunamadı. Tablo ismi 'keys' mi kontrol et.`);
-            res.status(200).json({ key: "SİSTEMDE KAYITLI KEY YOK" });
+            // Eğer bulamazsa, konsola mevcut tabloları yazdıralım (Hata tespiti için)
+            const collections = await database.listCollections().toArray();
+            const collectionNames = collections.map(c => c.name);
+            console.log("Mevcut Tablolar:", collectionNames);
+            
+            res.status(200).json({ 
+                key: "SİSTEMDE KAYITLI KEY YOK",
+                debug: `Aranan ID: ${id}, Bakılan Tablo: keys, Mevcut Tablolar: ${collectionNames.join(', ')}`
+            });
         }
     } catch (e) {
-        res.status(500).json({ key: "BAĞLANTI HATASI: " + e.message });
+        res.status(500).json({ key: "BAĞLANTI HATASI", error: e.message });
     } finally {
         await client.close();
     }
