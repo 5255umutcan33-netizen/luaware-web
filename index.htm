@@ -3,274 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LuaWare Script OS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <title>LuaWare | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-deep: #030303;
-            --bg-card: #0a0a0a;
-            --accent: #76ff03; /* Neon Yeşil */
-            --text-main: #ffffff;
-            --text-sub: #888888;
-            --discord-color: #5865F2;
-        }
-
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: var(--bg-deep); color: var(--text-main);
-            font-family: 'Montserrat', sans-serif; overflow-x: hidden;
-        }
-
-        /* ==========================================
-           🌌 YENİ ARKA PLAN: CYBERPUNK 3D GRID
-           ========================================== */
-        .bg-glow {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(118,255,3,0.05) 0%, rgba(0,0,0,0) 70%);
-            z-index: 0; pointer-events: none;
-        }
-
-        .grid-container {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            perspective: 600px; z-index: 1; pointer-events: none; overflow: hidden;
-        }
-
-        .grid-plane {
-            position: absolute; width: 200%; height: 200%;
-            bottom: -50%; left: -50%;
-            background-image: 
-                linear-gradient(rgba(118, 255, 3, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(118, 255, 3, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            transform: rotateX(75deg);
-            animation: gridMove 10s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: rotateX(75deg) translateY(0); }
-            100% { transform: rotateX(75deg) translateY(50px); }
-        }
-
-        /* ==========================================
-           🎬 INTRO VE ANA SİTE KATMANLARI
-           ========================================== */
-        #intro-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-deep); display: flex; justify-content: center; align-items: center;
-            z-index: 100; transition: opacity 1s ease, visibility 1s ease;
-        }
-
-        .intro-title {
-            font-size: 4.5rem; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 15px; margin: 0; color: #fff;
-            opacity: 0; filter: blur(15px);
-            animation: revealTitle 2s ease-out 0.5s forwards;
-        }
-        .intro-title span { color: var(--accent); }
-        @keyframes revealTitle { 0% { opacity: 0; filter: blur(15px); transform: scale(0.9); letter-spacing: 25px;} 100% { opacity: 1; filter: blur(0); transform: scale(1); letter-spacing: 15px;} }
-
-        #main-site {
-            position: relative; z-index: 10; display: none; opacity: 0;
-            min-height: 100vh; transition: opacity 1s ease;
-        }
-        #main-site.active { display: block; opacity: 1; }
-
-        /* ==========================================
-           💻 HEADER VE AÇILIR MENÜ (DROPDOWN)
-           ========================================== */
-        header {
-            background-color: rgba(5, 5, 5, 0.85); backdrop-filter: blur(10px);
-            padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #1a1a1a; position: sticky; top: 0; z-index: 50;
-        }
-
-        .nav-logo { font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; text-transform: uppercase;}
-        .nav-logo span { color: var(--accent); }
-
-        .discord-login-btn {
-            background-color: var(--discord-color); color: white;
-            border: none; padding: 10px 20px; font-weight: 600; border-radius: 5px;
-            cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s;
-        }
-        .discord-login-btn:hover { background-color: #4752C4; transform: translateY(-2px); }
-
-        /* Profil Sarıcısı ve Dropdown */
-        .profile-wrapper { position: relative; display: none; }
+        :root { --bg: #050505; --card: #111; --green: #76ff03; --text: #fff; --sub: #888; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
         
-        .user-profile {
-            display: flex; align-items: center; gap: 12px;
-            background: #111; padding: 5px 15px 5px 5px; border-radius: 30px; 
-            border: 1px solid #222; cursor: pointer; transition: 0.3s;
-        }
-        .user-profile:hover { border-color: var(--accent); }
-        .user-profile img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--accent); }
-        .user-profile .username { font-weight: 600; font-size: 0.9rem; user-select: none; }
-
-        /* Açılır Menü (Dropdown) */
-        .dropdown-menu {
-            position: absolute; top: 55px; right: 0; width: 160px;
-            background: var(--bg-card); border: 1px solid #222; border-radius: 8px;
-            display: flex; flex-direction: column; overflow: hidden;
-            opacity: 0; visibility: hidden; transform: translateY(-10px);
-            transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-        }
-        .dropdown-menu.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        /* Tertemiz Header */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; border-bottom: 1px solid #1a1a1a; background: rgba(5,5,5,0.9); }
+        .logo { font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; letter-spacing: 2px; }
+        .logo span { color: var(--green); }
         
-        .dropdown-menu button {
-            background: none; border: none; color: #fff; text-align: left;
-            padding: 12px 15px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 600;
-            cursor: pointer; transition: 0.2s; border-bottom: 1px solid #1a1a1a;
-        }
-        .dropdown-menu button:last-child { border-bottom: none; color: #ff3333; }
-        .dropdown-menu button:hover { background: var(--accent); color: #000; padding-left: 20px; }
-        .dropdown-menu button:last-child:hover { background: #ff3333; color: #fff; }
+        /* Butonlar */
+        .btn-login { background: #5865F2; color: #fff; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-login:hover { background: #4752C4; }
+        .btn-logout { background: transparent; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; display: none; font-weight: 600;}
+        .btn-logout:hover { border-color: #ff3333; color: #ff3333; }
 
-        /* ==========================================
-           📊 GÖRÜNÜMLER (HERO VE DASHBOARD)
-           ========================================== */
-        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
-        .hero h1 { font-size: 4rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-        .hero p { color: var(--text-sub); margin-top: 15px; font-size: 1.2rem; }
+        /* Giriş Yapılmamış Ekran */
+        .hero { text-align: center; margin-top: 15vh; }
+        .hero h1 { font-size: 3rem; margin-bottom: 10px; font-weight: 900; }
+        .hero p { color: var(--sub); font-size: 1.2rem; }
 
-        .dashboard-container { max-width: 900px; margin: 60px auto; padding: 0 20px; display: none; }
-        .card { background: var(--bg-card); border: 1px solid #1a1a1a; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .card-header { font-size: 1.5rem; font-weight: 800; border-bottom: 1px solid #222; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+        /* SADE DASHBOARD (Kullanıcı Paneli) */
+        .dashboard { display: none; max-width: 450px; margin: 10vh auto; background: var(--card); padding: 40px; border-radius: 16px; border: 1px solid #1a1a1a; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--green); margin-bottom: 20px; }
+        .username { font-size: 1.8rem; margin: 0 0 5px 0; }
+        .discord-id { color: var(--sub); font-size: 0.9rem; margin-bottom: 30px; font-family: monospace; }
         
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .info-box { background: #111; padding: 15px; border-radius: 8px; border: 1px solid #222; }
-        .info-label { color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .info-value { font-size: 1.1rem; font-weight: 600; font-family: monospace; color: var(--accent); }
-
-        .key-box { background: rgba(118, 255, 3, 0.05); border: 1px dashed var(--accent); padding: 20px; border-radius: 8px; text-align: center; font-size: 1.5rem; font-family: monospace; letter-spacing: 3px; color: #fff; }
-        .copy-btn { margin-top: 15px; width: 100%; background: #111; color: var(--accent); border: 1px solid var(--accent); padding: 12px; font-weight: 800; font-size: 1rem; text-transform: uppercase; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .copy-btn:hover { background: var(--accent); color: #000; }
-
+        .key-box { background: rgba(118,255,3,0.05); border: 1px dashed var(--green); padding: 20px; font-family: monospace; font-size: 1.4rem; color: var(--green); border-radius: 8px; margin-bottom: 20px; letter-spacing: 2px; }
+        .copy-btn { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 15px; width: 100%; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .copy-btn:hover { background: #222; border-color: var(--green); color: var(--green); }
     </style>
 </head>
 <body>
+    <header>
+        <a href="#" class="logo">LUA<span>WARE</span></a>
+        <div>
+            <a href="https://discord.com/oauth2/authorize?client_id=1491071700715048970&response_type=token&redirect_uri=https%3A%2F%2Fluaware-web.vercel.app&scope=identify" class="btn-login" id="loginBtn">Discord ile Giriş Yap</a>
+            <button class="btn-logout" id="logoutBtn">Çıkış Yap</button>
+        </div>
+    </header>
 
-    <div class="bg-glow"></div>
-    <div class="grid-container">
-        <div class="grid-plane"></div>
+    <div class="hero" id="hero">
+        <h1>Premium <span>Erişim</span></h1>
+        <p>Lisans anahtarlarına ulaşmak için Discord ile yetkilendir.</p>
     </div>
 
-    <div id="intro-screen">
-        <h1 class="intro-title">LuaWare <span>Script</span></h1>
-    </div>
-
-    <div id="main-site">
-        <header>
-            <a href="#" class="nav-logo" id="logoBtn">Lua<span>Ware</span></a>
-            
-            <button class="discord-login-btn" id="loginBtn">Discord ile Giriş Yap</button>
-            
-            <div class="profile-wrapper" id="profileWrapper">
-                <div class="user-profile" id="userProfileBtn">
-                    <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" id="userAvatar">
-                    <span class="username" id="userName">Noxyorj</span>
-                </div>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <button id="navHome">Ana Sayfa</button>
-                    <button id="navKeys">🔑 Keylerim</button>
-                    <button id="navLogout">Çıkış Yap</button>
-                </div>
-            </div>
-        </header>
-
-        <main class="hero" id="guestView">
-            <h1>Sisteme <span>Erişim</span> Sağla</h1>
-            <p>Lisans anahtarlarınızı yönetmek ve satın almak için Discord hesabınızla bağlanın.</p>
-        </main>
-
-        <main class="dashboard-container" id="dashboardView">
-            <div class="card">
-                <div class="card-header">
-                    Hesap Bilgileri
-                    <span style="font-size: 0.9rem; color: #000; background: var(--accent); padding: 5px 10px; border-radius: 5px;">Onaylı Kullanıcı</span>
-                </div>
-                <div class="info-grid">
-                    <div class="info-box"><div class="info-label">Kullanıcı Adı</div><div class="info-value" id="dashUsername">Yükleniyor...</div></div>
-                    <div class="info-box"><div class="info-label">Discord ID</div><div class="info-value" id="dashId">Yükleniyor...</div></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">LUAWARE Premium Key</div>
-                <div class="key-box">LUAWARE-NOXY-987X-G6F2-PLQ1</div>
-                <button class="copy-btn">Anahtarı Kopyala</button>
-            </div>
-        </main>
+    <div class="dashboard" id="dashboard">
+        <img src="https://cdn.discordapp.com/embed/avatars/0.png" class="profile-pic" id="userAvatar" alt="Profil">
+        <h2 class="username" id="userName">Yükleniyor...</h2>
+        <p class="discord-id" id="dashId">ID: Bekleniyor</p>
+        
+        <div style="text-align: left; font-size: 0.8rem; color: var(--sub); margin-bottom: 8px; text-transform: uppercase;">Aktif Anahtarınız</div>
+        <div class="key-box">LUAWARE-NOXY-987X-G6F2-PLQ1</div>
+        <button class="copy-btn">Anahtarı Kopyala</button>
     </div>
 
     <script>
-        // Intro Geçişi
-        setTimeout(() => {
-            const intro = document.getElementById('intro-screen');
-            const site = document.getElementById('main-site');
-            intro.style.opacity = '0'; intro.style.visibility = 'hidden';
-            setTimeout(() => { site.classList.add('active'); }, 800);
-        }, 2500);
+        window.onload = async () => {
+            // Discord'dan gelen linkin içindeki gizli Token'ı yakala
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
 
-        // Değişkenler
-        const loginBtn = document.getElementById('loginBtn');
-        const profileWrapper = document.getElementById('profileWrapper');
-        const userProfileBtn = document.getElementById('userProfileBtn');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const guestView = document.getElementById('guestView');
-        const dashboardView = document.getElementById('dashboardView');
-        
-        // Menü Butonları
-        const navHome = document.getElementById('navHome');
-        const navKeys = document.getElementById('navKeys');
-        const navLogout = document.getElementById('navLogout');
-        const logoBtn = document.getElementById('logoBtn');
+            if (accessToken) {
+                // Adam başarıyla giriş yaptıysa ekranları değiştir
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+                document.getElementById('hero').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
 
-        // ==========================================
-        // 🚀 GERÇEK DİSCORD OAUTH2 YÖNLENDİRMESİ
-        // ==========================================
-        loginBtn.addEventListener('click', () => {
-            loginBtn.innerHTML = "Discord'a Yönlendiriliyor..."; 
-            loginBtn.style.opacity = "0.7";
-            
-            // Senin kopyaladığın o efsane link burada!
-            window.location.href = "https://discord.com/oauth2/authorize?client_id=1491071700715048970&response_type=code&redirect_uri=https%3A%2F%2Fluaware-web.vercel.app%2Fapi%2Fcallback&scope=identify+openid";
-        });
+                try {
+                    // Discord API'ye bağlanıp adamın GERÇEK verilerini çek
+                    const res = await fetch('https://discord.com/api/users/@me', {
+                        headers: { authorization: `${tokenType} ${accessToken}` }
+                    });
+                    const user = await res.json();
 
-        // Dropdown Aç/Kapat
-        userProfileBtn.addEventListener('click', () => {
-            dropdownMenu.classList.toggle('show');
-        });
+                    // Çekilen bilgileri Sade Panel'e yazdır
+                    document.getElementById('userName').innerText = user.username;
+                    document.getElementById('dashId').innerText = `Discord ID: ${user.id}`;
+                    
+                    const avatarUrl = user.avatar 
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` 
+                        : 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    document.getElementById('userAvatar').src = avatarUrl;
 
-        // Boşluğa tıklayınca dropdown kapansın
-        window.addEventListener('click', (e) => {
-            if (!profileWrapper.contains(e.target)) {
-                dropdownMenu.classList.remove('show');
+                } catch (err) {
+                    console.error("Veri çekilemedi:", err);
+                }
             }
-        });
 
-        // "Keylerim"e Basınca Panel Açılsın
-        navKeys.addEventListener('click', () => {
-            guestView.style.display = 'none';
-            dashboardView.style.display = 'block';
-            dropdownMenu.classList.remove('show');
-        });
-
-        // "Ana Sayfa" veya Logoya Basınca Geri Dönsün
-        const goHome = () => {
-            dashboardView.style.display = 'none';
-            guestView.style.display = 'flex';
-            dropdownMenu.classList.remove('show');
+            // Çıkış Yap
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                window.location.href = "https://luaware-web.vercel.app"; // Temiz linke dön
+            });
         };
-        navHome.addEventListener('click', goHome);
-        logoBtn.addEventListener('click', goHome);
-
-        // "Çıkış Yap"a Basınca
-        navLogout.addEventListener('click', () => {
-            profileWrapper.style.display = 'none';
-            loginBtn.style.display = 'block';
-            loginBtn.innerHTML = "Discord ile Giriş Yap";
-            goHome();
-        });
     </script>
 </body>
 </html>
