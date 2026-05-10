@@ -166,8 +166,8 @@
             
             <div class="profile-wrapper" id="profileWrapper">
                 <div class="user-profile" id="userProfileBtn">
-                    <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar">
-                    <span class="username">Noxyorj</span>
+                    <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" id="userAvatar">
+                    <span class="username" id="userName">Noxyorj</span>
                 </div>
                 <div class="dropdown-menu" id="dropdownMenu">
                     <button id="navHome">Ana Sayfa</button>
@@ -189,8 +189,8 @@
                     <span style="font-size: 0.9rem; color: #000; background: var(--accent); padding: 5px 10px; border-radius: 5px;">Onaylı Kullanıcı</span>
                 </div>
                 <div class="info-grid">
-                    <div class="info-box"><div class="info-label">Kullanıcı Adı</div><div class="info-value">Noxyorj</div></div>
-                    <div class="info-box"><div class="info-label">Discord ID</div><div class="info-value">123456789012345678</div></div>
+                    <div class="info-box"><div class="info-label">Kullanıcı Adı</div><div class="info-value" id="dashUsername">Yükleniyor...</div></div>
+                    <div class="info-box"><div class="info-label">Discord ID</div><div class="info-value" id="dashId">Yükleniyor...</div></div>
                 </div>
             </div>
 
@@ -225,15 +225,15 @@
         const navLogout = document.getElementById('navLogout');
         const logoBtn = document.getElementById('logoBtn');
 
-        // MOCK-UP GİRİŞ SİMÜLASYONU
+        // ==========================================
+        // 🚀 GERÇEK DİSCORD OAUTH2 YÖNLENDİRMESİ
+        // ==========================================
         loginBtn.addEventListener('click', () => {
-            loginBtn.innerHTML = "Bağlanıyor..."; loginBtn.style.opacity = "0.7";
-            setTimeout(() => {
-                loginBtn.style.display = 'none';
-                profileWrapper.style.display = 'block'; // Profil kısmını göster
-                // Giris yaptı ama hala Ana Sayfada! Dropdown'dan Keylerime basması lazim.
-                loginBtn.style.opacity = "1";
-            }, 800);
+            loginBtn.innerHTML = "Discord'a Yönlendiriliyor..."; 
+            loginBtn.style.opacity = "0.7";
+            
+            // Senin kopyaladığın o efsane link burada!
+            window.location.href = "https://discord.com/oauth2/authorize?client_id=1491071700715048970&response_type=code&redirect_uri=https%3A%2F%2Fluaware-web.vercel.app%2Fapi%2Fcallback&scope=identify+openid";
         });
 
         // Dropdown Aç/Kapat
