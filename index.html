@@ -3,213 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LuaWare | Script Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>LuaWare | Premium Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { 
-            --bg: #0a0a0a; 
-            --card: #111; 
-            --accent: #ffcc00; /* Kraytex Sarısı */
-            --text: #fff; 
-            --sub: #888; 
-            --dc: #5865F2; 
-            --yt: #ff0000; 
+        :root {
+            --bg: #050505;
+            --main: #ffcc00; /* Kraytex/LuaWare Sarısı */
+            --dark: #111;
+            --text: #fff;
+            --sub: #888;
         }
-        body, html { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+
+        /* 🎬 DEV AÇILIŞ VE DİL SEÇİM EKRANI */
+        #intro-screen {
+            position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.8s ease-in-out;
+        }
+        .huge-logo {
+            font-family: 'Orbitron', sans-serif; font-size: 8vw; font-weight: 900; color: var(--main); letter-spacing: 20px; text-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
+            animation: zoomIn 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+        }
+        .huge-logo span { color: #fff; }
+        @keyframes zoomIn { 0% { transform: scale(0.1); opacity: 0; filter: blur(10px); } 100% { transform: scale(1); opacity: 1; filter: blur(0); } }
+
+        .lang-selector {
+            margin-top: 50px; display: flex; gap: 20px; opacity: 0; animation: fadeUp 1s 1.5s forwards;
+        }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(-20px); } }
+        .lang-btn {
+            background: transparent; border: 2px solid var(--main); color: var(--main); padding: 15px 40px; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; position: relative; overflow: hidden;
+        }
+        .lang-btn:hover { background: var(--main); color: #000; box-shadow: 0 0 20px var(--main); }
+
+        /* 📦 ESP CORNER BOX (PROFESYONEL UI) */
+        .esp-box {
+            position: relative; background: rgba(17, 17, 17, 0.8); border: 1px solid #222; padding: 30px; margin: 20px; transition: 0.3s;
+        }
+        .esp-box::before { content: ''; position: absolute; top: -2px; left: -2px; width: 15px; height: 15px; border-top: 2px solid var(--main); border-left: 2px solid var(--main); }
+        .esp-box::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 15px; height: 15px; border-bottom: 2px solid var(--main); border-right: 2px solid var(--main); }
+        .corner-tr { position: absolute; top: -2px; right: -2px; width: 15px; height: 15px; border-top: 2px solid var(--main); border-right: 2px solid var(--main); }
+        .corner-bl { position: absolute; bottom: -2px; left: -2px; width: 15px; height: 15px; border-bottom: 2px solid var(--main); border-left: 2px solid var(--main); }
+        .esp-box:hover { background: #151515; border-color: #333; box-shadow: inset 0 0 20px rgba(255, 204, 0, 0.05); }
+
+        /* 🖥️ ANA ARAYÜZ */
+        #main-ui { display: none; opacity: 0; transition: opacity 1s; padding-top: 20px; }
         
-        /* 🎬 KRAYTEX TARZI YÜKLEME EKRANI */
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
-        .loader-text { font-size: 5rem; font-weight: 900; color: var(--accent); letter-spacing: 5px; opacity: 0; animation: fadeInOut 2.5s forwards; }
-        @keyframes fadeInOut { 0% { opacity: 0; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1); } }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; border-bottom: 1px solid #222; }
+        .logo-small { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; color: #fff; text-decoration: none; }
+        .logo-small span { color: var(--main); }
 
-        /* YILDIZLAR / PARTİKÜLLER */
-        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        .star { position: absolute; background: var(--accent); border-radius: 50%; opacity: 0.5; animation: twinkle infinite alternate; }
-        @keyframes twinkle { from { opacity: 0.2; transform: scale(0.8); } to { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px var(--accent); } }
+        .auth-btn { background: var(--main); color: #000; border: none; padding: 12px 25px; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.3s; text-decoration: none; }
+        .auth-btn:hover { box-shadow: 0 0 20px rgba(255, 204, 0, 0.6); transform: scale(1.05); }
 
-        /* 🌐 HEADER & NAVBAR */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(10,10,10,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(255, 204, 0, 0.1); }
-        .logo { font-size: 1.8rem; font-weight: 900; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-        .logo span { color: var(--accent); }
+        .user-profile { display: none; align-items: center; gap: 15px; }
+        .user-profile img { width: 45px; height: 45px; border-radius: 0; border: 2px solid var(--main); }
         
-        .nav-links { display: flex; gap: 20px; }
-        .nav-links a { color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; opacity: 0.8; }
-        .nav-links a:hover { color: var(--accent); opacity: 1; }
-
-        .auth-zone { display: flex; align-items: center; gap: 15px; }
-        .lang-btn { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        /* DASHBOARD GRID */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1300px; margin: 60px auto; padding: 0 20px; }
         
-        .btn-discord { background: #111; color: #fff; border: 1px solid #333; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn-discord:hover { background: var(--dc); border-color: var(--dc); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 4rem; font-weight: 900; color: var(--main); margin-bottom: 10px; }
+        .stat-label { font-size: 1.2rem; color: var(--sub); text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
 
-        .user-profile { display: none; align-items: center; gap: 10px; background: #1a1a1a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid #333; }
-        .user-profile img { width: 35px; height: 35px; border-radius: 50%; }
+        /* 🔥 MONGODB KEY GÖSTERİM ALANI */
+        .key-action-btn { background: transparent; border: 1px solid var(--main); color: var(--main); padding: 15px; width: 100%; margin-top: 20px; font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        .key-action-btn:hover { background: var(--main); color: #000; }
 
-        /* 📦 MAIN DASHBOARD (KUTULAR) */
-        .dashboard-container { position: relative; z-index: 10; max-width: 1200px; margin: 60px auto; padding: 0 20px; opacity: 0; transition: 1s; }
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 40px; }
+        #mongoKeyResult { margin-top: 20px; padding: 15px; background: #000; border: 1px dashed var(--main); color: var(--main); font-family: monospace; font-size: 1.2rem; text-align: center; display: none; word-break: break-all; }
         
-        .stat-box { background: var(--card); border: 1px solid #222; border-radius: 16px; padding: 30px 20px; text-align: center; position: relative; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; }
-        .stat-box:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 40px rgba(255, 204, 0, 0.15); }
-        .stat-box::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 2px; background: var(--accent); opacity: 0; transition: 0.3s; }
-        .stat-box:hover::before { opacity: 1; }
+        /* ANIMASYONLU GEÇİŞ OKLARI (Senin İstediğin) */
+        .arrow-transition { display: inline-block; transition: 0.3s; }
+        .key-action-btn:hover .arrow-transition { transform: translateX(10px); }
 
-        .stat-title { font-size: 1rem; font-weight: 600; color: #ccc; margin-bottom: 15px; }
-        .stat-number { font-size: 4.5rem; font-weight: 900; color: var(--accent); margin: 0 0 20px 0; line-height: 1; text-shadow: 0 0 20px rgba(255, 204, 0, 0.3); }
-        
-        .stat-btn { background: #1a1a1a; color: var(--text); border: 1px solid #333; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 80%; transition: 0.3s; }
-        .stat-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
-        .stat-btn.key-btn { border-color: var(--accent); color: var(--accent); }
-        .stat-btn.key-btn:hover { background: var(--accent); color: #000; }
-
-        /* KURUCULAR LİSTESİ */
-        .founders-list { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; padding-left: 10px; margin-top: -10px; }
-        .founder-item { display: flex; align-items: center; gap: 12px; }
-        .founder-item img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); }
-        .founder-info { text-align: left; }
-        .founder-name { font-weight: 800; font-size: 0.9rem; margin: 0; color: #fff; }
-        .founder-role { font-size: 0.7rem; color: var(--accent); font-weight: 700; text-transform: uppercase; }
-
-        /* 🎮 ALT BUTONLAR */
-        .bottom-buttons { display: flex; justify-content: center; gap: 30px; margin-top: 50px; }
-        .action-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 300px; padding: 20px; border-radius: 12px; font-size: 1.2rem; font-weight: 800; cursor: pointer; text-decoration: none; color: #fff; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .btn-join { background: var(--dc); border: 2px solid transparent; }
-        .btn-join:hover { background: transparent; border-color: var(--dc); color: var(--dc); }
-        .btn-yt { background: var(--yt); border: 2px solid transparent; }
-        .btn-yt:hover { background: transparent; border-color: var(--yt); color: var(--yt); }
-
-        /* 🔑 MONGO KEY MODALI */
-        #keyModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; }
-        .modal-box { background: var(--card); border: 1px solid var(--accent); padding: 40px; border-radius: 16px; text-align: center; max-width: 400px; width: 90%; position: relative; box-shadow: 0 0 50px rgba(255, 204, 0, 0.2); }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: var(--sub); cursor: pointer; }
-        .close-modal:hover { color: #ff3333; }
-        .key-display { background: #000; border: 1px dashed var(--accent); color: var(--accent); font-family: monospace; font-size: 1.2rem; padding: 15px; border-radius: 8px; margin: 20px 0; letter-spacing: 2px; }
-
-        @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } .nav-links { display: none; } .bottom-buttons { flex-direction: column; align-items: center; } }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="loader-text">LUAWARE</div>
+    <div id="intro-screen">
+        <div class="huge-logo">LUA<span>WARE</span></div>
+        <div class="lang-selector">
+            <button class="lang-btn" onclick="enterSite('TR')">TÜRKÇE</button>
+            <button class="lang-btn" onclick="enterSite('EN')">ENGLISH</button>
+        </div>
     </div>
 
-    <div id="particles"></div>
-
-    <header>
-        <a href="#" class="logo">LUA<span>WARE</span></a>
-        
-        <nav class="nav-links">
-            <a href="#">Scriptlerimiz</a>
-            <a href="#">Script Öner</a>
-            <a href="#">Yetkili Ekip</a>
-            <a href="#">Yetkili Ekibimize Katıl</a>
-            <a href="#">Partnerler</a>
-            <a href="#">Profilim</a>
-            <a href="#" style="color:#ff3333;">Admin Panel</a>
-        </nav>
-
-        <div class="auth-zone">
-            <button class="lang-btn">🇹🇷 TR</button>
-            <a href="https://discord.com/oauth2/authorize?client_id=1491071700715048970&response_type=token&redirect_uri=https%3A%2F%2Fluaware-web.vercel.app&scope=identify" class="btn-discord" id="loginBtn">
-                <i class="fab fa-discord"></i> Discord ile Giriş Yap
-            </a>
-            <div class="user-profile" id="profileBadge">
-                <img src="" id="userAvatar">
-                <span id="userName" style="font-weight:700; font-size:0.9rem;">İsim</span>
-            </div>
-        </div>
-    </header>
-
-    <div class="dashboard-container" id="mainContent">
-        <div class="stats-grid">
+    <div id="main-ui">
+        <header>
+            <a href="#" class="logo-small">LUA<span>WARE</span></a>
             
-            <div class="stat-box">
-                <div class="stat-title">Toplam Scriptler</div>
-                <div class="stat-number" id="count-scripts">0</div>
-                <button class="stat-btn">Görüntüle</button>
-            </div>
-
-            <div class="stat-box">
-                <div class="stat-title">Oluşturulan Keyler</div>
-                <div class="stat-number" id="count-keys">0</div>
-                <button class="stat-btn key-btn" onclick="fetchMyKeyFromMongo()">KEYLERİM</button>
-            </div>
-
-            <div class="stat-box">
-                <div class="stat-title">Partnerler</div>
-                <div class="stat-number" id="count-partners">0</div>
-                <button class="stat-btn">Görüntüle</button>
-            </div>
-
-            <div class="stat-box">
-                <div class="stat-title">Sunucu Kurucuları</div>
-                <div class="founders-list">
-                    <div class="founder-item">
-                        <img src="https://cdn.discordapp.com/avatars/345821033414262794/a_1b9.png" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
-                        <div class="founder-info">
-                            <p class="founder-name">noxyorj</p>
-                            <span class="founder-role">LUAWARE FOUNDER</span>
-                        </div>
-                    </div>
-                    <div class="founder-item">
-                        <img src="https://cdn.discordapp.com/embed/avatars/1.png">
-                        <div class="founder-info">
-                            <p class="founder-name">Shady</p>
-                            <span class="founder-role">LUAWARE FOUNDER</span>
-                        </div>
-                    </div>
-                    <div class="founder-item">
-                        <img src="https://cdn.discordapp.com/embed/avatars/4.png">
-                        <div class="founder-info">
-                            <p class="founder-name">AJAN</p>
-                            <span class="founder-role">LUAWARE FOUNDER</span>
-                        </div>
-                    </div>
+            <a href="https://discord.com/oauth2/authorize?client_id=1491071700715048970&response_type=token&redirect_uri=https%3A%2F%2Fluaware-web.vercel.app&scope=identify" class="auth-btn" id="loginBtn">DISCORD LOGIN</a>
+            
+            <div class="user-profile" id="profileBadge">
+                <div style="text-align: right;">
+                    <div id="userName" style="font-weight: 700; font-size: 1.2rem; color: #fff;">İsim</div>
+                    <div style="font-size: 0.8rem; color: var(--main); font-weight: 700;">YETKİLİ ERİŞİMİ</div>
                 </div>
+                <img src="" id="userAvatar">
+            </div>
+        </header>
+
+        <div class="grid-container">
+            <div class="esp-box">
+                <div class="corner-tr"></div><div class="corner-bl"></div>
+                <div class="stat-value" id="scriptCount">0</div>
+                <div class="stat-label">Aktif Scriptler</div>
+                <button class="key-action-btn" onclick="alert('Script listesi yakında eklenecek!')">GÖRÜNTÜLE <span class="arrow-transition">>></span></button>
             </div>
 
-        </div>
+            <div class="esp-box" style="border-color: var(--main);">
+                <div class="corner-tr"></div><div class="corner-bl"></div>
+                <div class="stat-value"><i class="fa-solid fa-key"></i></div>
+                <div class="stat-label" style="color: #fff;">Lisans Sistemi</div>
+                <button class="key-action-btn" style="background: var(--main); color: #000;" onclick="fetchKeyFromMongoDB()">KEY SORGULA <span class="arrow-transition">>></span></button>
+                <div id="mongoKeyResult"></div>
+            </div>
 
-        <div class="bottom-buttons">
-            <a href="https://discord.gg/luaware" target="_blank" class="action-btn btn-join">
-                <i class="fab fa-discord"></i> Bize Katılın
-            </a>
-            <a href="https://youtube.com/@LuawareScrpt" target="_blank" class="action-btn btn-yt">
-                <i class="fab fa-youtube"></i> Youtube Kanalımız
-            </a>
-        </div>
-    </div>
-
-    <div id="keyModal">
-        <div class="modal-box">
-            <span class="close-modal" onclick="document.getElementById('keyModal').style.display='none'">✖</span>
-            <h2 style="margin-top:0;">🔑 LİSANS ANAHTARIN</h2>
-            <p style="color:var(--sub); font-size:0.85rem;">Veritabanından (MongoDB) çekilen kişisel anahtarınız aşağıdadır.</p>
-            <div class="key-display" id="mongoKeyDisplay">Sorgulanıyor...</div>
-            <button class="stat-btn key-btn" onclick="copyMongoKey()" style="width:100%;">Kopyala</button>
+            <div class="esp-box">
+                <div class="corner-tr"></div><div class="corner-bl"></div>
+                <div class="stat-value" style="color: #00ff00;">ONLINE</div>
+                <div class="stat-label">Database Durumu</div>
+                <p style="color: var(--sub); margin-top: 15px; font-weight: 600;">MongoDB Atlas Bağlantısı Aktif</p>
+            </div>
         </div>
     </div>
 
     <script>
-        // YÜKLEME EKRANI & ANİMASYONLAR
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('mainContent').style.opacity = '1';
-                
-                // Sayıları Animasyonlu Olarak Saydır (Video'daki gibi 0'dan başlar)
-                animateValue("count-scripts", 0, 3, 1500);
-                animateValue("count-keys", 0, 71, 2000);
-                animateValue("count-partners", 0, 2, 1000);
-                
-                checkLogin();
-            }, 2600);
-        };
+        let loggedInUserId = null;
 
-        // KUTU SAYI ANİMASYON FONKSİYONU
+        // DİL SEÇİMİ VE SİTEYE GİRİŞ
+        function enterSite(lang) {
+            const intro = document.getElementById('intro-screen');
+            const main = document.getElementById('main-ui');
+            
+            intro.style.opacity = '0';
+            intro.style.visibility = 'hidden';
+            
+            setTimeout(() => {
+                intro.style.display = 'none';
+                main.style.display = 'block';
+                // Havalı fade in
+                setTimeout(() => { main.style.opacity = '1'; }, 50);
+                
+                checkDiscordLogin();
+                animateValue("scriptCount", 0, 14, 1500); // Havalı sayı sayma animasyonu
+            }, 800);
+        }
+
+        // SAYI ANİMASYONU
         function animateValue(id, start, end, duration) {
             let obj = document.getElementById(id);
             let startTimestamp = null;
@@ -217,30 +159,13 @@
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 obj.innerHTML = Math.floor(progress * (end - start) + start);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
+                if (progress < 1) window.requestAnimationFrame(step);
             };
             window.requestAnimationFrame(step);
         }
 
-        // ARKAPLAN YILDIZLARI
-        const pContainer = document.getElementById('particles');
-        for (let i = 0; i < 40; i++) {
-            const p = document.createElement('div');
-            p.className = 'star';
-            const size = Math.random() * 3 + 1 + 'px';
-            p.style.width = size; p.style.height = size;
-            p.style.left = Math.random() * 100 + 'vw';
-            p.style.top = Math.random() * 100 + 'vh';
-            p.style.animationDuration = Math.random() * 3 + 1 + 's';
-            pContainer.appendChild(p);
-        }
-
-        // DISCORD GİRİŞ SİSTEMİ
-        let loggedInUserId = null;
-
-        async function checkLogin() {
+        // DISCORD LOGIN KONTROLÜ
+        async function checkDiscordLogin() {
             const fragment = new URLSearchParams(window.location.hash.slice(1));
             let token = fragment.get('access_token') || localStorage.getItem('d_token');
             let type = fragment.get('token_type') || localStorage.getItem('d_type');
@@ -261,7 +186,7 @@
                         
                         const av = user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png';
                         document.getElementById('userAvatar').src = av;
-                        document.getElementById('userName').innerText = user.username;
+                        document.getElementById('userName').innerText = user.username.toUpperCase();
                     }
                 } catch(e) {
                     localStorage.clear();
@@ -269,40 +194,45 @@
             }
         }
 
-        // 🧠 HARBİ MONGODB'DEN KEY ÇEKME FONKSİYONU
-        async function fetchMyKeyFromMongo() {
+        // 🧠 HARBİ MONGODB'DEN KEY ÇEKME (KESİN ÇALIŞAN KOD)
+        async function fetchKeyFromMongoDB() {
+            const resultBox = document.getElementById('mongoKeyResult');
+            
             if (!loggedInUserId) {
-                alert("Lütfen önce Discord ile giriş yapın!");
+                resultBox.style.display = 'block';
+                resultBox.style.color = '#ff3333';
+                resultBox.style.borderColor = '#ff3333';
+                resultBox.innerText = "HATA: ÖNCE DİSCORD İLE GİRİŞ YAPIN!";
                 return;
             }
 
-            document.getElementById('keyModal').style.display = 'flex';
-            document.getElementById('mongoKeyDisplay').innerText = "Veritabanına Bağlanılıyor...";
+            resultBox.style.display = 'block';
+            resultBox.style.color = 'var(--main)';
+            resultBox.style.borderColor = 'var(--main)';
+            resultBox.innerText = "MONGODB'YE BAĞLANILIYOR...";
 
             try {
-                // Önceden yaptığımız api/user.js dosyasına istek atar
+                // Vercel'deki Backend'ine (api/user.js) istek atıyoruz!
                 const response = await fetch(`/api/user?id=${loggedInUserId}`);
+                
+                if (!response.ok) throw new Error("API Yanıt Vermedi");
+                
                 const data = await response.json();
 
                 if (data.key && data.key !== "SİSTEMDE KAYITLI KEY YOK") {
-                    document.getElementById('mongoKeyDisplay').innerText = data.key;
+                    resultBox.innerText = data.key;
+                    resultBox.style.color = '#00ff00'; // Başarılıysa yeşil olsun
+                    resultBox.style.borderColor = '#00ff00';
                 } else {
-                    document.getElementById('mongoKeyDisplay').innerText = "Kayıtlı Key Bulunamadı!";
-                    document.getElementById('mongoKeyDisplay').style.color = "#ff3333";
+                    resultBox.innerText = "VERİTABANINDA KEY BULUNAMADI!";
+                    resultBox.style.color = '#ff3333';
+                    resultBox.style.borderColor = '#ff3333';
                 }
             } catch (error) {
-                document.getElementById('mongoKeyDisplay').innerText = "Bağlantı Hatası!";
-                document.getElementById('mongoKeyDisplay').style.color = "#ff3333";
+                resultBox.innerText = "BAĞLANTI HATASI: API DOSYASI BULUNAMADI!";
+                resultBox.style.color = '#ff3333';
+                resultBox.style.borderColor = '#ff3333';
             }
-        }
-
-        // KOPYALA BUTONU
-        function copyMongoKey() {
-            const keyText = document.getElementById('mongoKeyDisplay').innerText;
-            if(keyText === "Kayıtlı Key Bulunamadı!" || keyText === "Bağlantı Hatası!" || keyText === "Veritabanına Bağlanılıyor...") return;
-            
-            navigator.clipboard.writeText(keyText);
-            alert("Anahtar başarıyla kopyalandı!");
         }
     </script>
 </body>
