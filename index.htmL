@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuaWare | Premium Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #030303; --card: #0a0a0a; --green: #76ff03; --text: #fff; --sub: #888; }
+        body, html { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+        
+        /* ❄️ SOFT KAR TOPU EFEKTİ */
+        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .snowball { position: absolute; background: rgba(118, 255, 3, 0.1); border-radius: 50%; animation: fall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-10vh); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
+
+        /* 🎬 ELİT INTRO ANİMASYONU */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg); display: flex; justify-content: center; align-items: center;
+            z-index: 100; transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .intro-title { font-size: 4rem; font-weight: 900; letter-spacing: 15px; opacity: 0; animation: reveal 2.5s ease forwards; text-transform: uppercase;}
+        .intro-title span { color: var(--green); text-shadow: 0 0 20px var(--green); }
+        @keyframes reveal { 0% { opacity: 0; filter: blur(15px); transform: scale(0.8); } 100% { opacity: 1; filter: blur(0); transform: scale(1); } }
+
+        /* HEADER & DROPDOWN */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; border-bottom: 1px solid #1a1a1a; background: rgba(5,5,5,0.85); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 50; opacity: 0; transition: 0.5s;}
+        header.active { opacity: 1; }
+        .logo { font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; letter-spacing: 2px; }
+        .logo span { color: var(--green); }
+        
+        .auth-zone { position: relative; }
+        .btn-login { background: #5865F2; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; transition: 0.3s; display: none; }
+        .btn-login:hover { background: #4752C4; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4); }
+
+        .profile-wrapper { display: none; position: relative; }
+        .user-profile { display: flex; align-items: center; gap: 12px; background: #111; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
+        .user-profile:hover { border-color: var(--green); }
+        .user-profile img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--green); }
+        
+        .dropdown-menu { position: absolute; top: 55px; right: 0; width: 180px; background: #0d0d0d; border: 1px solid #222; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .dropdown-menu.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu button { background: none; border: none; color: #fff; text-align: left; padding: 12px 20px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #1a1a1a; }
+        .dropdown-menu button:hover { background: var(--green); color: #000; }
+        .dropdown-menu button.logout-btn:hover { background: #ff3333; color: #fff; }
+
+        /* VIEWS */
+        .view { display: none; padding: 50px 20px; animation: fadeInUp 0.8s ease forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .hero { text-align: center; margin-top: 15vh; }
+        .hero h1 { font-size: 4rem; margin: 0; font-weight: 900; }
+        .hero h1 span { color: var(--green); }
+        .hero p { color: var(--sub); font-size: 1.2rem; margin-top: 20px; }
+
+        .dashboard { max-width: 700px; margin: 0 auto; }
+        .card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 15px; padding: 35px; margin-bottom: 25px; }
+        .dash-header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .dash-header img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--green); }
+        
+        .key-box { background: #050505; border: 1px dashed var(--green); padding: 25px; border-radius: 10px; text-align: center; font-family: monospace; font-size: 1.6rem; color: #fff; letter-spacing: 3px; position: relative; margin: 20px 0; }
+        .copy-btn { background: var(--green); color: #000; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: 900; font-size: 1rem; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .copy-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(118,255,3,0.4); }
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+
+    <div id="intro-screen">
+        <h1 class="intro-title">LuaWare <span>Script</span></h1>
+    </div>
+
+    <div id="main-wrapper">
+        <header id="header">
+            <a href="#" class="logo" onclick="showView('hero')">LUA<span>WARE</span></a>
+            <div class="auth-zone">
+                <a href="https://discord.com/oauth2/authorize?client_id=1490626610632851486&response_type=token&redirect_uri=https%3A%2F%2Fluaware-web.vercel.app&scope=identify" class="btn-login" id="loginBtn">Discord Giriş</a>
+                
+                <div class="profile-wrapper" id="profileWrapper">
+                    <div class="user-profile" id="profileBtn">
+                        <img src="" id="userImg" alt="">
+                        <span id="userName">Yükleniyor...</span>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown">
+                        <button onclick="showView('hero')">Ana Sayfa</button>
+                        <button onclick="showView('dashboard')">🔑 Keylerim</button>
+                        <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="view hero" id="heroView">
+            <h1>Premium <span>Erişim</span></h1>
+            <p>Veritabanına kayıtlı lisans anahtarlarını görmek için sisteme bağlan.</p>
+        </main>
+
+        <main class="view dashboard" id="dashboardView">
+            <div class="card">
+                <div class="dash-header">
+                    <img src="" id="dashImg" alt="">
+                    <div>
+                        <h2 id="dashName" style="margin:0">İsim</h2>
+                        <span id="dashId" style="color:var(--sub); font-size:0.9rem">ID: 00000</span>
+                    </div>
+                </div>
+                <div style="text-align: left;">
+                    <span style="color:var(--sub); font-size:0.8rem; text-transform:uppercase">MongoDB'den Gelen Key</span>
+                    <div class="key-box" id="userKey">YÜKLENİYOR...</div>
+                    <button class="copy-btn" onclick="copyKey()">Kopyala</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ❄️ KAR TOPLARI
+        const part = document.getElementById('particles');
+        for(let i=0; i<35; i++) {
+            const s = document.createElement('div');
+            s.className = 'snowball';
+            const sz = Math.random()*5+2+'px';
+            s.style.width = sz; s.style.height = sz;
+            s.style.left = Math.random()*100+'vw';
+            s.style.animationDuration = Math.random()*10+8+'s';
+            s.style.animationDelay = Math.random()*5+'s';
+            part.appendChild(s);
+        }
+
+        // 🚀 INTRO & AUTO LOGIN
+        window.onload = async () => {
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.opacity = '0';
+                document.getElementById('intro-screen').style.visibility = 'hidden';
+                document.getElementById('header').classList.add('active');
+                document.getElementById('main-wrapper').style.display = 'block';
+                checkAuth();
+            }, 2800);
+        };
+
+        async function checkAuth() {
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            let token = fragment.get('access_token') || localStorage.getItem('token');
+            let type = fragment.get('token_type') || localStorage.getItem('type');
+
+            if(token) {
+                localStorage.setItem('token', token);
+                localStorage.setItem('type', type);
+                window.history.replaceState(null, null, window.location.pathname);
+
+                const res = await fetch('https://discord.com/api/users/@me', {
+                    headers: { authorization: `${type} ${token}` }
+                });
+                const user = await res.json();
+
+                if(user.id) {
+                    document.getElementById('loginBtn').style.display = 'none';
+                    document.getElementById('profileWrapper').style.display = 'block';
+                    document.getElementById('userName').innerText = user.username;
+                    document.getElementById('dashName').innerText = user.username;
+                    document.getElementById('dashId').innerText = `ID: ${user.id}`;
+                    const img = user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    document.getElementById('userImg').src = img;
+                    document.getElementById('dashImg').src = img;
+                    
+                    showView('hero');
+                    fetchMongoData(user.id);
+                }
+            } else {
+                document.getElementById('loginBtn').style.display = 'block';
+                showView('hero');
+            }
+        }
+
+        async function fetchMongoData(discordId) {
+            // BURASI ÇOK ÖNEMLİ: api/user.js dosyasına istek atar
+            const res = await fetch(`/api/user?id=${discordId}`);
+            const data = await res.json();
+            document.getElementById('userKey').innerText = data.key || "KEY BULUNAMADI";
+        }
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+            document.getElementById(id + 'View').style.display = 'block';
+        }
+
+        document.getElementById('profileBtn').onclick = () => document.getElementById('dropdown').classList.toggle('show');
+        
+        function logout() { localStorage.clear(); window.location.reload(); }
+        
+        function copyKey() {
+            navigator.clipboard.writeText(document.getElementById('userKey').innerText);
+            alert("Anahtar kopyalandı!");
+        }
+    </script>
+</body>
+</html>
